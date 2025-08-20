@@ -1,0 +1,21 @@
+{
+  "name": "chatbot-laa",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@langchain/community": "^0.3.53",
+    "@langchain/ollama": "^0.2.3",
+    "langchain": "^0.3.31",
+    "ollama": "^0.5.17",
+    "parse": "^6.1.1",
+    "pdf-parse": "^1.1.1"
+  }
+}
