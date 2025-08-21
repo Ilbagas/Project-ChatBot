@@ -24,7 +24,7 @@ export async function loadPDF(filePath) {
   const data = await pdf(dataBuffer); 
 
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
+    chunkSize: 1000,
     chunkOverlap: 50,
   });
 
@@ -39,7 +39,7 @@ export async function loadPDF(filePath) {
 
     const docs = await loadPDF("./test/data/Syarat-Pembuatan-SIM.pdf");
     console.log("✅ Jumlah potongan:", docs.length);
-    console.log("🔍 Contoh isi:", docs[0].pageContent.slice(0, 200));
+    console.log("🔍 AI ini diperuntukan untuk anda yang mencara informasi tatacara membuat sim. ");
 
     console.timeEnd("⏱️ Waktu eksekusi"); // end timer
   } catch (err) {
