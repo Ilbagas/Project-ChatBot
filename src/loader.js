@@ -4,44 +4,53 @@ import { fileURLToPath } from "url";
 import pkg from "pdf-parse";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
-
 const pdf = pkg.default || pkg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function loadPDF(filePath) {
-
   const absolutePath = path.resolve(__dirname, filePath);
 
   if (!fs.existsSync(absolutePath)) {
     throw new Error(`File tidak ditemukan: ${absolutePath}`);
   }
 
-  console.log("📄 Membaca file:", absolutePath); 
+  console.log("📄 Membaca file:", absolutePath);
 
   const dataBuffer = fs.readFileSync(absolutePath);
-  const data = await pdf(dataBuffer); 
+  const data = await pdf(dataBuffer);
+
+  // 🔹 Split per halaman
+  const pages = data.text.split("\f").filter((p) => p.trim().length > 0);
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
-    chunkOverlap: 50,
+    chunkOverlap: 100,
   });
 
-  const docs = await splitter.createDocuments([data.text]);
+  // 🔹 Buat docs dengan metadata halaman
+  let docs = [];
+  for (let i = 0; i < pages.length; i++) {
+    const pageDocs = await splitter.createDocuments([pages[i]], [
+      { pageNumber: i + 1 },
+    ]);
+    docs = docs.concat(pageDocs);
+  }
+
   return docs;
 }
 
-
+// Test loader
 (async () => {
   try {
-    console.time("⏱️ Waktu eksekusi"); 
+    console.time("⏱️ Waktu eksekusi");
 
-    const docs = await loadPDF("./test/data/Syarat-Pembuatan-SIM.pdf");
+    const docs = await loadPDF("./test/data/Dummy-LAA.pdf");
     console.log("✅ Jumlah potongan:", docs.length);
-    console.log("🔍 AI ini diperuntukan untuk anda yang mencara informasi tatacara membuat sim. ");
+    console.log("📑 Contoh metadata:", docs[0]?.metadata);
 
-    console.timeEnd("⏱️ Waktu eksekusi"); // end timer
+    console.timeEnd("⏱️ Waktu eksekusi");
   } catch (err) {
     console.error("❌ Error:", err.message);
   }
